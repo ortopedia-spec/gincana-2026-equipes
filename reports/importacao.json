@@ -1,0 +1,75 @@
+{
+  "arquivo": "Equipe gincana 2026.xlsx",
+  "importadoEm": "2026-11-03T12:10:16+00:00",
+  "abas": [
+    {
+      "nome": "50 anos de corações solidários",
+      "estado": "visible",
+      "profissionais": 62
+    },
+    {
+      "nome": "Estrelas da solidariedade",
+      "estado": "visible",
+      "profissionais": 52
+    },
+    {
+      "nome": "Presentes da esperança",
+      "estado": "visible",
+      "profissionais": 62
+    },
+    {
+      "nome": "Laços que acolhem",
+      "estado": "visible",
+      "profissionais": 53
+    },
+    {
+      "nome": "Árvore da generosidade",
+      "estado": "visible",
+      "profissionais": 61
+    },
+    {
+      "nome": "Mãos que alimentam sonhos",
+      "estado": "visible",
+      "profissionais": 51
+    },
+    {
+      "nome": "Sinos da partilha",
+      "estado": "visible",
+      "profissionais": 63
+    },
+    {
+      "nome": "Luzes que transformam",
+      "estado": "visible",
+      "profissionais": 66
+    },
+    {
+      "nome": "Natal de todos",
+      "estado": "visible",
+      "profissionais": 59
+    },
+    {
+      "nome": "Legado de amor-Sorri",
+      "estado": "visible",
+      "profissionais": 59
+    }
+  ],
+  "totalAbas": 10,
+  "totalProfissionais": 588,
+  "duplicidadesPossiveis": [],
+  "conferenciaCelulaACelula": "aprovada",
+  "abasRemovidasOuRenomeadas": [],
+  "abasNovas": [
+    "50 anos de corações solidários",
+    "Estrelas da solidariedade",
+    "Laços que acolhem",
+    "Legado de amor-Sorri",
+    "Luzes que transformam",
+    "Mãos que alimentam sonhos",
+    "Natal de todos",
+    "Presentes da esperança",
+    "Sinos da partilha",
+    "Árvore da generosidade"
+  ],
+  "coordenadoresSemEquipe": [],
+  "alertaRenomeacao": false
+}

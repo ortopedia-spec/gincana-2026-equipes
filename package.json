@@ -1,0 +1,6 @@
+{
+  "name": "gincana-2026-equipes",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test tests/*.test.mjs"}
+}
