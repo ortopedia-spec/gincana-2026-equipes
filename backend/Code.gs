@@ -72,6 +72,7 @@ function bridgeRequest(input){
 function doPost(e){
   var message={requestId:'',ok:false,error:'Requisição inválida.'};
   try{var input=JSON.parse(e.parameter.payload||'{}');message.requestId=String(input.requestId||'').slice(0,120);message.result=dispatch_(input.method,input.data||{},input.token);message.ok=true;delete message.error;}catch(err){message.error=err&&err.message?err.message:'Erro inesperado.';}
+  if(e.parameter.transport==='json')return ContentService.createTextOutput(JSON.stringify(message)).setMimeType(ContentService.MimeType.JSON);
   var template=HtmlService.createTemplateFromFile('Response');template.message=JSON.stringify(message).replace(/</g,'\\u003c');template.origin=JSON.stringify(PropertiesService.getScriptProperties().getProperty('PUBLIC_ORIGIN')||'https://ortopedia-spec.github.io');
   return template.evaluate().setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }

@@ -17,6 +17,18 @@ window.addEventListener('message',event=>{
   else item.reject(new Error(event.data.error||'Falha na operação.'));
 });
 export function api(method,data={},token=''){
+  if(donationsConfig.apiUrl){
+    if(!/^https:\/\/[-a-z0-9.]+\/api$/.test(donationsConfig.apiUrl))return Promise.reject(new Error('Endereço do serviço inválido.'));
+    const requestId=crypto.randomUUID();
+    return fetch(donationsConfig.apiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestId,method,data,token}),signal:AbortSignal.timeout(35000)})
+      .then(async response=>{
+        if(!response.ok)throw new Error('Não foi possível acessar o serviço de doações.');
+        const message=await response.json();
+        if(message.requestId!==requestId)throw new Error('Resposta inválida do serviço.');
+        if(!message.ok)throw new Error(message.error||'Falha na operação.');
+        return message.result;
+      });
+  }
   if(!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(donationsConfig.appsScriptUrl))return Promise.reject(new Error('Módulo de doações ainda não configurado.'));
   const requestId=crypto.randomUUID();
   return new Promise((resolve,reject)=>{
