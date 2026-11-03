@@ -1,6 +1,6 @@
 # Gincana 2026 · Consulta de equipes
 
-Consulta local de equipes da Sorri Bauru. A interface é estática; os nomes e setores ficam em `dist/data/equipes.json`. **O diretório `dist` contém dados pessoais e exige controle de acesso no servidor.**
+Consulta pública de equipes da Sorri Bauru: **https://ortopedia-spec.github.io/gincana-2026-equipes/**. A interface é estática; os nomes e setores ficam em `dist/data/equipes.json`. A divulgação pública desses dados foi autorizada para a Gincana 2026.
 
 ## Executar localmente
 
@@ -41,19 +41,24 @@ python tests/compare_excel.py "C:\caminho\Equipe.xlsx"
 
 O teste JavaScript cobre busca por nome, equipe e setor, normalização, duplicatas sintéticas, ordenação, ausência de resultados e coordenador vazio/preenchido. O teste Python confere cada linha e coluna da base contra o Excel.
 
-## Repositório privado e hospedagem
+## Repositório e hospedagem pública
 
-O projeto está publicado no repositório **privado** [ortopedia-spec/gincana-2026-equipes](https://github.com/ortopedia-spec/gincana-2026-equipes), branch `main`. O remote `origin` já está configurado. Para atualizações futuras, revise as alterações remotas e publique seus commits sem force push:
+O projeto está no repositório **público** [ortopedia-spec/gincana-2026-equipes](https://github.com/ortopedia-spec/gincana-2026-equipes), branch `main`. O GitHub Pages publica a raiz da branch `gh-pages`, que contém somente os arquivos de `dist`. O plano atual não permite Pages neste repositório enquanto ele é privado.
+
+Para atualizações futuras, revise as alterações remotas, teste, publique os commits e então atualize a branch do site sem force push:
 
 ```powershell
 git fetch origin
 git status
+npm test
 git push origin main
+$pagesCommit = git subtree split --prefix=dist
+git push origin "${pagesCommit}:refs/heads/gh-pages"
 ```
 
-A planilha original está excluída por `.gitignore` e não foi enviada.
+A planilha original está excluída por `.gitignore` e não foi enviada. Não adicione credenciais, tokens ou dados adicionais sem autorização específica. O site e seus JSONs são públicos, sem login.
 
-**O GitHub Pages está desativado.** Um repositório privado não torna o Pages privado. A [documentação do GitHub](https://docs.github.com/en/enterprise-cloud@latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site) informa que a publicação privada de Pages requer uma organização no GitHub Enterprise Cloud. Nesta conta, a hospedagem protegida não foi comprovada. Para uso institucional, publique `dist` atrás de autenticação no servidor, protegendo `/` e `/data/*.json`; teste o acesso anônimo a ambos antes de divulgar o endereço. Não use senha no JavaScript nem `noindex` como proteção.
+Se `git subtree split` for bloqueado pelo isolamento do terminal, execute o mesmo comando em um terminal Git com permissão normal. O [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) publica a branch escolhida na raiz do subdiretório `/gincana-2026-equipes/`; os caminhos da aplicação são relativos.
 
 ## Estrutura
 
