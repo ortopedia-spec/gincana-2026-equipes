@@ -1,4 +1,4 @@
-import {api,donationsReady} from './donations-api.js';
+import {api,donationsReady} from './donations-api.js?v=20261103-2';
 import {donationsConfig} from './donations-config.js';
 import {products as staticProducts} from './catalog.js';
 const $=id=>document.getElementById(id);
