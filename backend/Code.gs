@@ -57,7 +57,18 @@ function changeDonation_(payload,identity,correction){return withLock_(function(
   batch_([update_('Doacoes',d)].concat(updates,[append_('Itens_Doacao',newItems),append_('Historico_Validacoes',[event])]));
   return {protocol:d.protocolo,confirmedPoints:newPoints,delta:next.delta,professionalId:d.profissional_id};
 });}
-function doGet(){return HtmlService.createHtmlOutput('Módulo de doações da Gincana 2026. Acesse pelo site oficial.');}
+function doGet(e){
+  var bridge=String(e&&e.parameter&&e.parameter.bridge||'');
+  if(!/^[a-f0-9-]{36}$/.test(bridge))return HtmlService.createHtmlOutput('Módulo de doações da Gincana 2026. Acesse pelo site oficial.');
+  var template=HtmlService.createTemplateFromFile('Bridge');
+  template.bridge=JSON.stringify(bridge);
+  template.origin=JSON.stringify(PropertiesService.getScriptProperties().getProperty('PUBLIC_ORIGIN')||'https://ortopedia-spec.github.io');
+  return template.evaluate().setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+function bridgeRequest(input){
+  if(!input||typeof input!=='object'||typeof input.requestId!=='string'||!/^[a-f0-9-]{36}$/.test(input.requestId))throw new Error('Requisição inválida.');
+  return dispatch_(input.method,input.data||{},input.token);
+}
 function doPost(e){
   var message={requestId:'',ok:false,error:'Requisição inválida.'};
   try{var input=JSON.parse(e.parameter.payload||'{}');message.requestId=String(input.requestId||'').slice(0,120);message.result=dispatch_(input.method,input.data||{},input.token);message.ok=true;delete message.error;}catch(err){message.error=err&&err.message?err.message:'Erro inesperado.';}

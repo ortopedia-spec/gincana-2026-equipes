@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body><script>
+  const bridgeId = <?!= bridge ?>;
+  const publicOrigin = <?!= origin ?>;
+  window.addEventListener('message', event => {
+    if (event.origin !== publicOrigin || event.source !== window.top) return;
+    const request = event.data;
+    if (!request || request.kind !== 'gincana-request' || request.requestId !== bridgeId) return;
+    google.script.run
+      .withSuccessHandler(result => window.top.postMessage({kind:'gincana-response',requestId:bridgeId,ok:true,result}, publicOrigin))
+      .withFailureHandler(error => window.top.postMessage({kind:'gincana-response',requestId:bridgeId,ok:false,error:error && error.message || 'Falha na operação.'}, publicOrigin))
+      .bridgeRequest(request);
+  });
+  window.top.postMessage({kind:'gincana-ready',requestId:bridgeId}, publicOrigin);
+</script></body></html>

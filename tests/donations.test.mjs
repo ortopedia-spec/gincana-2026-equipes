@@ -5,6 +5,13 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 
 const source=name=>fs.readFileSync(new URL(`../backend/${name}`,import.meta.url),'utf8');
+test('catálogo estático acompanha os 31 produtos oficiais',()=>{
+  const products=JSON.parse(fs.readFileSync(new URL('../backend/catalogo.json',import.meta.url),'utf8'));
+  const module=fs.readFileSync(new URL('../dist/catalog.js',import.meta.url),'utf8');
+  const published=JSON.parse(module.match(/export const products=(.*);/)[1]);
+  assert.equal(products.length,31);
+  assert.deepEqual(published,products.map(p=>({id:p.produto_id,nome:p.nome,referencia:p.quantidade_referencia,pontos:p.pontos_por_unidade})));
+});
 function harness(){
   const headers={Profissionais:['profissional_id','nome','equipe_id','equipe_nome','setor_unidade','ativo'],Produtos:['produto_id','nome','quantidade_referencia','pontos_por_unidade','ativo','ordem_exibicao'],Validadores:['email','nome','ativo'],Doacoes:['doacao_id','protocolo','profissional_id','equipe_id','criado_em','status','pontos_previstos','pontos_confirmados','validado_em','validado_por','versao_registro','chave_idempotencia','hash_solicitacao'],Itens_Doacao:['item_id','doacao_id','produto_id','produto_nome_snapshot','referencia_snapshot','pontos_por_unidade_snapshot','quantidade_declarada','quantidade_validada','pontos_previstos','pontos_confirmados'],Historico_Validacoes:['evento_id','doacao_id','tipo_evento','registrado_em','responsavel_email','justificativa','valores_anteriores','valores_novos','chave_operacao']};
   const tabs=Object.fromEntries(Object.entries(headers).map(([k,v])=>[k,[v]]));
