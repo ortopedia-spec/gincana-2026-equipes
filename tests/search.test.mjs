@@ -1,16 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {searchData,sortedMembers,coordinatorLabel} from '../dist/search.js';
+import {searchData,sortedMembers} from '../dist/search.js';
 
 const data=JSON.parse(await readFile(new URL('../dist/data/equipes.json',import.meta.url),'utf8'));
 const person=data.profissionais[0];
 const team=data.equipes.find(t=>t.id===person.equipeId);
-test('base real tem todas as equipes, pessoas e coordenadores vazios',async()=>{
+test('base real tem todas as equipes e pessoas',()=>{
   assert.equal(data.equipes.length,10);assert.equal(data.profissionais.length,588);
-  assert.ok(data.equipes.every(t=>t.coordenador===''));
-  const coord=JSON.parse(await readFile(new URL('../dist/data/coordenadores.json',import.meta.url),'utf8'));
-  assert.ok(Object.values(coord.coordenadores).every(value=>value===''));
 });
 test('nome completo, primeiro nome, sobrenome e trecho sem acentos ou caixa',()=>{
   assert.ok(searchData(data,person.nome).people.some(p=>p.id===person.id));
@@ -33,7 +30,3 @@ test('duplicados sintéticos permanecem selecionáveis por ID',()=>{
   assert.equal(sortedMembers(synthetic,'a').length,1);
 });
 test('sem resultados',()=>assert.deepEqual(searchData(data,'zzzzzzzzzz'),{people:[],teams:[]}));
-test('coordenador vazio e preenchido em dados sintéticos',()=>{
-  assert.equal(coordinatorLabel(team,{}),'Coordenador ainda não cadastrado');
-  assert.equal(coordinatorLabel(team,{[team.nome]:'Pessoa de teste'}),'Pessoa de teste');
-});

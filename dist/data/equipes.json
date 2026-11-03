@@ -7,53 +7,43 @@
   "equipes": [
     {
       "id": "eq_099208311a6c9f3b",
-      "nome": "50 anos de corações solidários",
-      "coordenador": ""
+      "nome": "50 anos de corações solidários"
     },
     {
       "id": "eq_cd7a96e7b93f555d",
-      "nome": "Estrelas da solidariedade",
-      "coordenador": ""
+      "nome": "Estrelas da solidariedade"
     },
     {
       "id": "eq_cb7c4f3ddcc7c30d",
-      "nome": "Presentes da esperança",
-      "coordenador": ""
+      "nome": "Presentes da esperança"
     },
     {
       "id": "eq_f350083df1b58aa7",
-      "nome": "Laços que acolhem",
-      "coordenador": ""
+      "nome": "Laços que acolhem"
     },
     {
       "id": "eq_908702eab62bbcd2",
-      "nome": "Árvore da generosidade",
-      "coordenador": ""
+      "nome": "Árvore da generosidade"
     },
     {
       "id": "eq_21485f65fa71ad5b",
-      "nome": "Mãos que alimentam sonhos",
-      "coordenador": ""
+      "nome": "Mãos que alimentam sonhos"
     },
     {
       "id": "eq_1cef6bd2f1b0f503",
-      "nome": "Sinos da partilha",
-      "coordenador": ""
+      "nome": "Sinos da partilha"
     },
     {
       "id": "eq_ff8a8c224112143f",
-      "nome": "Luzes que transformam",
-      "coordenador": ""
+      "nome": "Luzes que transformam"
     },
     {
       "id": "eq_08d2b7b27d73f92c",
-      "nome": "Natal de todos",
-      "coordenador": ""
+      "nome": "Natal de todos"
     },
     {
       "id": "eq_deed265bbb78c1cc",
-      "nome": "Legado de amor-Sorri",
-      "coordenador": ""
+      "nome": "Legado de amor-Sorri"
     }
   ],
   "profissionais": [

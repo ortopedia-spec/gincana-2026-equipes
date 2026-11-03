@@ -41,13 +41,11 @@ def import_workbook(source: Path) -> dict:
     workbook = load_workbook(source, read_only=True, data_only=True)
     old = read_json(DATA / "equipes.json", {"equipes": []})
     old_names = {team["nome"] for team in old.get("equipes", [])}
-    coord = read_json(DATA / "coordenadores.json", {"coordenadores": {}})
-    existing = coord.get("coordenadores", {})
     teams, people, source_rows = [], [], []
     incomplete = []
     for sheet in workbook.worksheets:  # includes hidden sheets
         team_id = stable_id("eq", sheet.title)
-        teams.append({"id": team_id, "nome": sheet.title, "coordenador": existing.get(sheet.title, "")})
+        teams.append({"id": team_id, "nome": sheet.title})
         for row_number, values in enumerate(sheet.iter_rows(values_only=True), start=1):
             cells = [as_text(value) for value in values]
             if not any(cell.strip() for cell in cells):
@@ -83,13 +81,11 @@ def import_workbook(source: Path) -> dict:
         "conferenciaCelulaACelula": "aprovada",
         "abasRemovidasOuRenomeadas": sorted(old_names - names),
         "abasNovas": sorted(names - old_names),
-        "coordenadoresSemEquipe": sorted(set(existing) - names),
         "alertaRenomeacao": bool(old_names - names and names - old_names),
     }
     DATA.mkdir(parents=True, exist_ok=True)
     REPORTS.mkdir(parents=True, exist_ok=True)
     (DATA / "equipes.json").write_text(json.dumps(base, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    (DATA / "coordenadores.json").write_text(json.dumps({"versao": 1, "atualizadoEm": now, "coordenadores": {name: existing.get(name, "") for name in sorted(names)}}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (REPORTS / "importacao.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return report
 
