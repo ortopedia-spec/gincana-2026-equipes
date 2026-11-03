@@ -1,0 +1,34 @@
+# Backend de doações · Google Apps Script
+
+Projeto Apps Script: [Gincana 2026 | Doações API](https://script.google.com/d/1jU8sMkLwy6PC3UBfLrCZlJ4pCxLd4HLWk02RDU4wrHhoqMNhflYAPdxT/edit). A base é a [planilha privada Gincana 2026 | Doações](https://docs.google.com/spreadsheets/d/1bIeNox8Er33LEZTcfYiAQdNdWNvvhvK-djBotztZ0c8/edit). O projeto é independente da planilha; `Code.gs` abre somente a planilha pelo ID. O `Seed.gs` foi gerado dos 588 profissionais e 31 produtos com `node scripts/build_apps_script_seed.mjs`.
+
+## Inicialização
+
+1. No editor do Apps Script, habilite o **Serviço avançado Google Sheets API** (versão v4) e a Google Sheets API no projeto Cloud vinculado, se o editor solicitar. O manifesto já declara o serviço avançado e os escopos.
+2. Execute `initialize` uma vez e autorize o script como proprietário. A rotina cria apenas abas e cabeçalhos ausentes, acrescenta profissionais e produtos por ID, e nunca modifica `Doacoes`, `Itens_Doacao` ou `Historico_Validacoes` existentes. Nesta planilha as seis abas e os registros iniciais já foram importados; a rotina deve retornar `inserted: 0`.
+3. Confira 588 profissionais, 31 produtos e a aba `Validadores` sem contas inventadas.
+
+## Login do Serviço Social
+
+No Google Cloud, crie um projeto próprio da Gincana, configure a tela de consentimento OAuth e crie um **cliente OAuth do tipo Aplicativo da Web**. Cadastre `https://ortopedia-spec.github.io` como origem JavaScript autorizada. O fluxo usa o popup de **authorization code** do Google Identity Services, escopo `openid email`, com troca de código no servidor. O código de autorização é de uso único. O servidor recebe o ID token diretamente do endpoint de token Google via HTTPS, confere `aud`, `iss`, `exp`, `iat`, `email_verified`, `sub` e confirma `sub`/e-mail no endpoint `userinfo` com o access token. O navegador recebe apenas uma sessão aleatória de até uma hora; cada operação restrita confere novamente a sessão e a aba `Validadores`.
+
+Nas **Propriedades do script**, defina:
+
+| Nome | Valor |
+| --- | --- |
+| `GOOGLE_CLIENT_ID` | ID público do cliente OAuth Web |
+| `GOOGLE_CLIENT_SECRET` | Segredo do cliente OAuth Web; manter **somente** nas propriedades do script |
+| `PUBLIC_ORIGIN` | `https://ortopedia-spec.github.io` |
+| `SPREADSHEET_ID` | `1bIeNox8Er33LEZTcfYiAQdNdWNvvhvK-djBotztZ0c8` (opcional; já há fallback no código) |
+
+Não coloque o segredo em `dist/`, no Git ou no chat. Adicione na aba privada `Validadores` uma linha com o e-mail Google real de cada profissional do Serviço Social, nome e `ativo = TRUE`. Para revogar, mude `ativo` para `FALSE` ou remova a linha; a próxima operação restrita será negada mesmo se a sessão estiver aberta. Compartilhe a planilha apenas com administradores que precisam editá-la; validadores comuns não precisam de acesso direto ao arquivo.
+
+## Publicação
+
+Implante como **Aplicativo da Web**, executar como **Eu**, acesso **Qualquer pessoa**. O acesso público é necessário apenas para cadastro sem login; a autorização das operações administrativas é feita novamente em cada chamada de servidor. Copie o URL `/exec` para `dist/donations-config.js` e o ID público OAuth para `googleClientId`. Não use URL `/dev` em produção.
+
+O frontend envia formulários `POST` para um iframe oculto porque o GitHub Pages não pode ler respostas CORS do Apps Script. O Apps Script devolve um documento HTML que responde por `postMessage` apenas à origem pública configurada. O frontend valida a origem Google e um ID aleatório de cada requisição. Tokens e códigos seguem somente no corpo HTTPS e não entram no URL.
+
+O cadastro usa chave de idempotência enviada pelo navegador e verificada sob `LockService`; validações e correções usam `versao_registro` para impedir conflitos. Cada alteração relacionada é aplicada em uma única chamada atômica a `Sheets.Spreadsheets.batchUpdate`. Totais confirmados são derivados somente de doações `VALIDADA`, para evitar somar de novo após correção. Todos os valores de texto gravados pela API usam `stringValue`, sem interpretação como fórmula.
+
+Antes de atualizar `gh-pages`, valide em ambiente real uma doação legítima e sua conferência com a conta autorizada, ou use uma cópia de teste da planilha para testes sintéticos. Não crie doações fictícias nesta planilha real. Rode `npm test` para os testes sintéticos locais.

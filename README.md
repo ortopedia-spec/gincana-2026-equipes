@@ -1,6 +1,12 @@
 # Gincana 2026 · Consulta de equipes
 
-Consulta pública de equipes da Sorri Bauru: **https://ortopedia-spec.github.io/gincana-2026-equipes/**. A interface é estática; os nomes e setores ficam em `dist/data/equipes.json`. A divulgação pública desses dados foi autorizada para a Gincana 2026.
+Consulta pública de equipes da Sorri Bauru: **https://ortopedia-spec.github.io/gincana-2026-equipes/**. Os nomes e setores ficam em `dist/data/equipes.json`. A divulgação pública desses dados foi autorizada para a Gincana 2026.
+
+## Módulo de doações
+
+O código do cadastro e da validação está em `dist/donations.js` e `backend/`. A base privada já foi criada: [Gincana 2026 | Doações](https://docs.google.com/spreadsheets/d/1bIeNox8Er33LEZTcfYiAQdNdWNvvhvK-djBotztZ0c8/edit), com 588 profissionais, 31 produtos e as abas `Validadores`, `Doacoes`, `Itens_Doacao` e `Historico_Validacoes`. O [projeto Apps Script](https://script.google.com/d/1jU8sMkLwy6PC3UBfLrCZlJ4pCxLd4HLWk02RDU4wrHhoqMNhflYAPdxT/edit) contém o backend. Veja [backend/README.md](backend/README.md) para inicialização, cliente OAuth, propriedades seguras, validadores e implantação.
+
+**Estado da publicação:** o módulo só aparece quando `dist/donations-config.js` recebe o URL real `/exec` do Apps Script e o ID público do cliente OAuth. Não atualize a branch `gh-pages` antes de configurar e comprovar a integração real. Até lá, o endereço público acima continua oferecendo a consulta de equipes existente, sem cadastro de doações.
 
 ## Executar localmente
 
