@@ -1,4 +1,5 @@
 import {searchData,sortedMembers} from './search.js';
+import {initDonations,setProfessional,professionalActions} from './donations.js';
 const $=id=>document.getElementById(id);
 const form=$('search-form'),query=$('query'),region=$('result-region'),status=$('data-status'),clear=$('clear-button'),submit=$('search-button');
 let data=null,options=null;
@@ -16,7 +17,7 @@ function renderTeam(team,person=null){
   title.append(el('p','section-kicker','Sua equipe'),el('h2','',team.nome));
   header.append(title,el('span','count',`${members.length} ${members.length===1?'integrante':'integrantes'}`));
   box.append(header);
-  if(person){const match=el('div','matched-person');match.append(el('span','','Profissional encontrado'),el('strong','',person.nome));box.append(match)}
+  if(person){const match=el('div','matched-person');match.append(el('span','','Profissional encontrado'),el('strong','',person.nome));box.append(match);setProfessional(person,team,()=>renderTeam(team,person));const actions=professionalActions();if(actions)box.append(actions)}
   box.append(el('h3','member-heading','Integrantes da equipe'));
   const list=el('ol','members');
   for(const member of members){
@@ -37,6 +38,7 @@ async function load(){
     const base=await response.json();
     if(!Array.isArray(base.equipes)||!Array.isArray(base.profissionais)||base.metadados?.situacao==='aguardando_planilha')throw new Error('Base de equipes ainda não importada.');
     data=base;
+    initDonations(base,person=>renderTeam(data.equipes.find(t=>t.id===person.equipeId),person));
     status.textContent=`${base.equipes.length} equipes · ${base.profissionais.length} profissionais`;
     submit.disabled=false;
   }catch(error){
