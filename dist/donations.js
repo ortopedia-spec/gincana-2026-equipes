@@ -15,8 +15,9 @@ function quantityRow(product,initial,onChange,declared=null){
   const row=el('div','product-row'),description=el('div','product-description');description.append(el('strong','',product.nome||product.name),el('small','',`${product.referencia||product.reference} · ${product.pontos||product.unitPoints} pontos por unidade`));
   if(declared!==null)description.append(el('small','declared-label',`Declarado: ${declared}`));
   const controls=el('div','quantity-controls'),input=el('input');input.type='number';input.inputMode='numeric';input.min='0';input.max='1000000';input.step='1';input.value=String(initial);input.setAttribute('aria-label',`Quantidade de ${product.nome||product.name}`);
-  const minus=button('−','quantity-button',()=>{const q=parseQuantity(input.value);input.value=String(Math.max(0,q-1));onChange();});
-  const plus=button('+','quantity-button',()=>{const q=parseQuantity(input.value);input.value=String(Math.min(1000000,q+1));onChange();});
+  const step=delta=>{let q;try{q=input.value.trim()===''?0:parseQuantity(input.value);}catch(error){input.setCustomValidity(error.message);input.reportValidity();return;}input.value=String(Math.min(1000000,Math.max(0,q+delta)));input.setCustomValidity('');onChange();};
+  const minus=button('−','quantity-button',()=>step(-1));
+  const plus=button('+','quantity-button',()=>step(1));
   input.addEventListener('input',onChange);controls.append(minus,input,plus);
   const subtotal=el('strong','item-subtotal','0 pontos');row.append(description,controls,subtotal);
   return {row,input,subtotal,id:product.id||product.productId,points:product.pontos||product.unitPoints};
