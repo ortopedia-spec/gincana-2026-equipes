@@ -1,10 +1,11 @@
 import {api,donationsReady} from './donations-api.js';
 import {donationsConfig} from './donations-config.js';
+import {products as staticProducts} from './catalog.js';
 const $=id=>document.getElementById(id);
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=text;return n;};
 const button=(label,cls,fn)=>{const n=el('button',cls,label);n.type='button';n.addEventListener('click',fn);return n;};
 const region=$('result-region'),searchPanel=$('search-panel'),adminButton=$('validator-open');
-let currentPerson=null,currentTeam=null,catalog=null,authToken='',adminEmail='',returnToProfessional=null;
+let currentPerson=null,currentTeam=null,authToken='',adminEmail='',returnToProfessional=null;
 function show(node){searchPanel.hidden=true;region.replaceChildren(node);window.scrollTo({top:0,behavior:'instant'});}
 function back(){searchPanel.hidden=false;if(returnToProfessional)returnToProfessional();else region.replaceChildren();}
 function shell(kicker,title){const box=el('section','donation-panel');box.append(el('p','section-kicker',kicker),el('h2','',title));return box;}
@@ -22,13 +23,13 @@ function quantityRow(product,initial,onChange,declared=null){
   return {row,input,subtotal,id:product.id||product.productId,points:product.pontos||product.unitPoints};
 }
 function recalc(rows,total){let sum=0;for(const row of rows){try{const q=parseQuantity(row.input.value);const pts=q*row.points;row.subtotal.textContent=`${pts} pontos`;sum+=pts;row.input.setCustomValidity('');}catch(e){row.input.setCustomValidity(e.message);row.subtotal.textContent='—';total.textContent='Corrija as quantidades';return false;}}total.textContent=`${sum} pontos`;return true;}
-async function getCatalog(){if(!catalog)catalog=(await api('catalog')).products;return catalog;}
+function getCatalog(){return staticProducts;}
 export function setProfessional(person,team,renderAgain){currentPerson=person;currentTeam=team;returnToProfessional=renderAgain;}
 export function professionalActions(){if(!donationsReady||!currentPerson)return null;const actions=el('div','professional-actions');actions.append(button('Cadastrar doação','primary-button',()=>openDonation()),button('Doações validadas','secondary-button',()=>openHistory()));return actions;}
 async function openDonation(){
   const person=currentPerson,team=currentTeam,box=shell('Doação de alimentos','Cadastrar doação');box.append(el('p','donation-context',`${person.nome} · ${team.nome}`),el('p','muted','Informe unidades das referências indicadas. A pontuação é prevista e depende da conferência do Serviço Social.'));
-  const list=el('div','product-list'),total=el('strong','total-points','0 pontos'),footer=el('div','donation-footer');box.append(list,el('p','total-label','Total previsto'),total,footer);const backButton=button('Voltar','secondary-button',back);footer.append(backButton);show(box);notice(box,'Carregando alimentos…');
-  try{const products=await getCatalog();box.querySelector('.donation-notice').remove();const rows=products.map(p=>quantityRow(p,0,()=>recalc(rows,total)));rows.forEach(r=>list.append(r.row));const key=crypto.randomUUID();const save=button('Salvar doação','primary-button',async()=>{
+  const list=el('div','product-list'),total=el('strong','total-points','0 pontos'),footer=el('div','donation-footer');box.append(list,el('p','total-label','Total previsto'),total,footer);const backButton=button('Voltar','secondary-button',back);footer.append(backButton);show(box);
+  try{const products=getCatalog();const rows=products.map(p=>quantityRow(p,0,()=>recalc(rows,total)));rows.forEach(r=>list.append(r.row));const key=crypto.randomUUID();const save=button('Salvar doação','primary-button',async()=>{
     if(!recalc(rows,total)){notice(box,'Corrija as quantidades.','error');return;}const items=rows.map(r=>({produtoId:r.id,quantidade:parseQuantity(r.input.value)})).filter(i=>i.quantidade>0);if(!items.length){notice(box,'Selecione ao menos um alimento.','error');return;}
     setBusy(save,true,'Salvar doação');backButton.disabled=true;try{const result=await api('createDonation',{professionalId:person.id,idempotencyKey:key,items});const done=shell('Cadastro concluído','Doação cadastrada!');done.append(el('p','donation-protocol',result.protocol),el('p','','Doação cadastrada! Leve sua doação até o Serviço Social para validação.'),el('p','projected-label',`${result.points} pontos previstos`),button('Nova doação','primary-button',()=>openDonation()),button('Voltar à equipe','secondary-button',back));show(done);}catch(e){notice(box,e.message,'error');}finally{setBusy(save,false,'Salvar doação');backButton.disabled=false;}
   });footer.prepend(save);
