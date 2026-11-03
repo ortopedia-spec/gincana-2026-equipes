@@ -80,7 +80,7 @@ function dispatch_(method,payload,token){
   if(method==='catalog')return catalog_();
   if(method==='createDonation')return createDonation_(payload);
   if(method==='validatedDonations')return validatedDonations_(payload);
-  if(method==='authorize')return login_(payload.code);
+  if(method==='authorize')return login_(payload.email,payload.password);
   if(method==='logout')return logout_(token);
   var identity=requireValidator_(token);
   if(method==='pending')return pending_(payload);

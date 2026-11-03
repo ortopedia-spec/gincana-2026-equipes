@@ -13,13 +13,13 @@ test('catálogo estático acompanha os 31 produtos oficiais',()=>{
   assert.deepEqual(published,products.map(p=>({id:p.produto_id,nome:p.nome,referencia:p.quantidade_referencia,pontos:p.pontos_por_unidade})));
 });
 function harness(){
-  const headers={Profissionais:['profissional_id','nome','equipe_id','equipe_nome','setor_unidade','ativo'],Produtos:['produto_id','nome','quantidade_referencia','pontos_por_unidade','ativo','ordem_exibicao'],Validadores:['email','nome','ativo'],Doacoes:['doacao_id','protocolo','profissional_id','equipe_id','criado_em','status','pontos_previstos','pontos_confirmados','validado_em','validado_por','versao_registro','chave_idempotencia','hash_solicitacao'],Itens_Doacao:['item_id','doacao_id','produto_id','produto_nome_snapshot','referencia_snapshot','pontos_por_unidade_snapshot','quantidade_declarada','quantidade_validada','pontos_previstos','pontos_confirmados'],Historico_Validacoes:['evento_id','doacao_id','tipo_evento','registrado_em','responsavel_email','justificativa','valores_anteriores','valores_novos','chave_operacao']};
+  const headers={Profissionais:['profissional_id','nome','equipe_id','equipe_nome','setor_unidade','ativo'],Produtos:['produto_id','nome','quantidade_referencia','pontos_por_unidade','ativo','ordem_exibicao'],Validadores:['email','nome','ativo','senha'],Doacoes:['doacao_id','protocolo','profissional_id','equipe_id','criado_em','status','pontos_previstos','pontos_confirmados','validado_em','validado_por','versao_registro','chave_idempotencia','hash_solicitacao'],Itens_Doacao:['item_id','doacao_id','produto_id','produto_nome_snapshot','referencia_snapshot','pontos_por_unidade_snapshot','quantidade_declarada','quantidade_validada','pontos_previstos','pontos_confirmados'],Historico_Validacoes:['evento_id','doacao_id','tipo_evento','registrado_em','responsavel_email','justificativa','valores_anteriores','valores_novos','chave_operacao']};
   const tabs=Object.fromEntries(Object.entries(headers).map(([k,v])=>[k,[v]]));
   tabs.Profissionais.push(['p1','Ana','e1','Laços que acolhem','Setor A',true]);
   tabs.Produtos.push(['ALI001','Panetone','Unidade',8,true,1],['ALI002','Leite','Caixa',4,true,2],['ALI003','Café','Pacote',5,true,3]);
-  tabs.Validadores.push(['validor@example.com','Validador',true]);
+  tabs.Validadores.push(['validor@example.com','Validador',true,'0042#X']);
   let seq=0,lock=false;
-  const sheet=(name)=>({getDataRange:()=>({getValues:()=>tabs[name].map(r=>[...r])}),getSheetId:()=>Object.keys(headers).indexOf(name)+1,getLastRow:()=>tabs[name].length,getRange:(row,col,height,width)=>({getValues:()=>tabs[name].slice(row-1,row-1+height).map(r=>r.slice(col-1,col-1+width)),setValues:values=>values.forEach((v,i)=>{tabs[name][row-1+i]=v;})}),setFrozenRows:()=>{}});
+  const sheet=(name)=>({getDataRange:()=>({getValues:()=>tabs[name].map(r=>[...r])}),getSheetId:()=>Object.keys(headers).indexOf(name)+1,getLastRow:()=>tabs[name].length,getRange:(row,col,height,width)=>({getValues:()=>tabs[name].slice(row-1,row-1+height).map(r=>r.slice(col-1,col-1+width)),getDisplayValues:()=>tabs[name].slice(row-1,row-1+height).map(r=>r.slice(col-1,col-1+width).map(v=>String(v??''))),setValues:values=>values.forEach((v,i)=>{tabs[name][row-1+i]=v;})}),setFrozenRows:()=>{}});
   const book={getSheetByName:sheet,getId:()=> 'synthetic'};
   const context=vm.createContext({console,Date,BigInt,Number,JSON,Object,Array,String,Boolean,Error,Math,
     SpreadsheetApp:{openById:()=>book},PropertiesService:{getScriptProperties:()=>({getProperty:k=>k==='SPREADSHEET_ID'?'synthetic':'client'})},
@@ -51,20 +51,34 @@ test('validação, extra não declarado, conflito, correção e totais',()=>{
   assert.equal(corrected.delta,8);assert.equal(c.validatedDonations_({professionalId:'p1'}).totalConfirmed,42);assert.equal(c.validatedDonations_({professionalId:'p1'}).teamTotalConfirmed,42);assert.equal(tabs.Historico_Validacoes.length,3);
   assert.throws(()=>c.dispatch_('correct',{...payload,version:2,operationKey:'op-3',reason:'Outra correção solicitada.'},'valid'),/alterada/);
 });
-test('OAuth por código: claims, conta autorizada, sessão e revogação',()=>{
-  const {context:c,tabs}=harness(),cache=new Map(),now=Math.floor(Date.now()/1000),claims={aud:'client',iss:'https://accounts.google.com',exp:now+300,iat:now-10,email_verified:true,email:'VALIDOR@example.com',sub:'stable-sub'};
-  const jwt=x=>`head.${Buffer.from(JSON.stringify(x)).toString('base64url')}.signature`;
-  c.Utilities.base64DecodeWebSafe=s=>[...Buffer.from(s,'base64url')];c.Utilities.newBlob=b=>({getDataAsString:()=>Buffer.from(b).toString()});
+test('login consulta A, C e D da mesma linha, mantém senha exata e usa sessão temporária',()=>{
+  const {context:c,tabs}=harness(),cache=new Map();
   c.CacheService={getScriptCache:()=>({put:(k,v)=>cache.set(k,v),get:k=>cache.get(k),remove:k=>cache.delete(k)})};
-  c.PropertiesService={getScriptProperties:()=>({getProperty:k=>({SPREADSHEET_ID:'synthetic',GOOGLE_CLIENT_ID:'client',GOOGLE_CLIENT_SECRET:'secret',PUBLIC_ORIGIN:'https://ortopedia-spec.github.io'})[k]})};
-  c.UrlFetchApp={fetch:(url,options)=>({getResponseCode:()=>200,getContentText:()=>JSON.stringify(url.includes('/token')?{id_token:jwt(claims),access_token:'access',expires_in:3600}:{sub:claims.sub,email:claims.email,email_verified:true})})};
   vm.runInContext(source('Auth.gs'),c);
-  for(const bad of [{aud:'other'},{iss:'evil'},{exp:now-1},{email_verified:false}])assert.throws(()=>c.oauthClaims_(jwt({...claims,...bad}),'client',now),/inválida/);
-  assert.equal(c.oauthClaims_(jwt(claims),'client',now).email,'validor@example.com');
-  const logged=c.login_('one-time-code');assert.equal(logged.email,'validor@example.com');assert.equal(c.requireValidator_(logged.sessionToken).sub,'stable-sub');
-  tabs.Validadores[1][2]=false;assert.throws(()=>c.requireValidator_(logged.sessionToken),/permissão/);tabs.Validadores[1][2]=true;
-  c.logout_(logged.sessionToken);assert.throws(()=>c.requireValidator_(logged.sessionToken),/expirou/);
-  c.UrlFetchApp={fetch:()=>({getResponseCode:()=>400,getContentText:()=>''})};assert.throws(()=>c.login_('used-code'),/expirou/);
+  tabs.Validadores.push(['segunda@example.com','Segunda',true,'Outro!7'],['sem-senha@example.com','Incompleto',true,'']);
+  const invalid=/E-mail ou senha incorretos, ou acesso inativo/;
+  assert.throws(()=>c.login_('validor@example.com','0042#x'),invalid);
+  assert.throws(()=>c.login_('inexistente@example.com','0042#X'),invalid);
+  assert.throws(()=>c.login_('validor@example.com','Outro!7'),invalid);
+  assert.throws(()=>c.login_('segunda@example.com','0042#X'),invalid);
+  assert.throws(()=>c.login_('sem-senha@example.com',''),invalid);
+  assert.throws(()=>c.dispatch_('pending',{query:'Ana'},''),/sessão expirou/);
+  assert.throws(()=>c.dispatch_('validate',{},''),/sessão expirou/);
+  const logged=c.login_('  VALIDOR@EXAMPLE.COM  ','0042#X');
+  assert.equal(logged.email,'validor@example.com');assert.equal(logged.name,'Validador');
+  assert.equal(c.requireValidator_(logged.sessionToken).email,'validor@example.com');
+  tabs.Validadores[1][2]=false;assert.throws(()=>c.requireValidator_(logged.sessionToken),/sessão expirou/);
+  assert.throws(()=>c.login_('validor@example.com','0042#X'),invalid);
+  tabs.Validadores[1][2]=true;
+  const second=c.login_('validor@example.com','0042#X');
+  c.logout_(second.sessionToken);assert.throws(()=>c.dispatch_('pending',{query:'Ana'},second.sessionToken),/sessão expirou/);
+  assert.throws(()=>c.dispatch_('validate',{},second.sessionToken),/sessão expirou/);
+  tabs.Validadores[1][3]='Nova!008';
+  assert.throws(()=>c.login_('validor@example.com','0042#X'),invalid);
+  assert.equal(c.login_('validor@example.com','Nova!008').email,'validor@example.com');
+  tabs.Validadores[1][3]=42;
+  assert.throws(()=>c.login_('validor@example.com','0042'),invalid);
+  assert.equal(c.login_('validor@example.com','42').email,'validor@example.com');
 });
 test('inicialização repetida preserva registros e não duplica IDs',()=>{
   const {context:c,tabs}=harness();vm.runInContext(source('Setup.gs'),c);

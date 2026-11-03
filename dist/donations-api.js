@@ -1,4 +1,4 @@
-import {donationsConfig} from './donations-config.js';
+import {donationsConfig} from './donations-config.js?v=20261103-4';
 const pending=new Map();
 function googleScriptOrigin(origin){try{const u=new URL(origin);return u.protocol==='https:'&&(u.hostname==='script.google.com'||u.hostname==='script.googleusercontent.com'||u.hostname.endsWith('-script.googleusercontent.com'));}catch{return false;}}
 window.addEventListener('message',event=>{
@@ -39,4 +39,4 @@ export function api(method,data={},token=''){
     document.body.append(frame);
   });
 }
-export const donationsReady=Boolean(donationsConfig.appsScriptUrl&&donationsConfig.googleClientId);
+export const donationsReady=Boolean(donationsConfig.apiUrl||donationsConfig.appsScriptUrl);
