@@ -43,17 +43,17 @@ O teste JavaScript cobre busca por nome, equipe e setor, normalização, duplica
 
 ## Repositório privado e hospedagem
 
-Após autenticar `gh` com uma conta autorizada, execute **dentro deste diretório**:
+O projeto está publicado no repositório **privado** [ortopedia-spec/gincana-2026-equipes](https://github.com/ortopedia-spec/gincana-2026-equipes), branch `main`. O remote `origin` já está configurado. Para atualizações futuras, revise as alterações remotas e publique seus commits sem force push:
 
 ```powershell
-gh auth login -h github.com
-gh repo create ortopedia-spec/gincana-2026-equipes --private --source . --remote origin --push
-gh repo view ortopedia-spec/gincana-2026-equipes --json visibility,nameWithOwner
+git fetch origin
+git status
+git push origin main
 ```
 
-Antes de usar esse comando, confira se o repositório de destino já existe e contém trabalho de terceiros. Se existir, revise e integre as alterações em vez de criar ou sobrescrever. A planilha original está excluída por `.gitignore`.
+A planilha original está excluída por `.gitignore` e não foi enviada.
 
-**Não ative GitHub Pages sem verificar acesso privado ao site.** Um repositório privado não torna o Pages privado. A [documentação do GitHub](https://docs.github.com/en/enterprise-cloud@latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site) informa que a publicação privada de Pages requer uma organização no GitHub Enterprise Cloud. Nesta conta, a hospedagem protegida não foi comprovada. Para uso institucional, publique `dist` atrás de autenticação no servidor, protegendo `/` e `/data/*.json`; teste o acesso anônimo a ambos antes de divulgar o endereço. Não use senha no JavaScript nem `noindex` como proteção.
+**O GitHub Pages está desativado.** Um repositório privado não torna o Pages privado. A [documentação do GitHub](https://docs.github.com/en/enterprise-cloud@latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site) informa que a publicação privada de Pages requer uma organização no GitHub Enterprise Cloud. Nesta conta, a hospedagem protegida não foi comprovada. Para uso institucional, publique `dist` atrás de autenticação no servidor, protegendo `/` e `/data/*.json`; teste o acesso anônimo a ambos antes de divulgar o endereço. Não use senha no JavaScript nem `noindex` como proteção.
 
 ## Estrutura
 
