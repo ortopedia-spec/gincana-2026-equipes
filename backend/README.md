@@ -25,10 +25,10 @@ Não coloque o segredo em `dist/`, no Git ou no chat. Adicione na aba privada `V
 
 ## Publicação
 
-Implante como **Aplicativo da Web**, executar como **Eu**, acesso **Qualquer pessoa**. O acesso público é necessário apenas para cadastro sem login; a autorização das operações administrativas é feita novamente em cada chamada de servidor. Copie o URL `/exec` para `dist/donations-config.js` e o ID público OAuth para `googleClientId`. Não use URL `/dev` em produção.
+Implante como **Aplicativo da Web**, executar como **Eu**, acesso **Qualquer pessoa** (`ANYONE_ANONYMOUS` no manifesto). O acesso público é necessário para cadastro sem login; a autorização das operações administrativas é feita novamente em cada chamada de servidor. Copie o URL `/exec` para `dist/donations-config.js` e o ID público OAuth para `googleClientId`. Não use URL `/dev` em produção.
 
 O frontend envia formulários `POST` para um iframe oculto porque o GitHub Pages não pode ler respostas CORS do Apps Script. O Apps Script devolve um documento HTML que responde por `postMessage` apenas à origem pública configurada. O frontend valida a origem Google e um ID aleatório de cada requisição. Tokens e códigos seguem somente no corpo HTTPS e não entram no URL.
 
 O cadastro usa chave de idempotência enviada pelo navegador e verificada sob `LockService`; validações e correções usam `versao_registro` para impedir conflitos. Cada alteração relacionada é aplicada em uma única chamada atômica a `Sheets.Spreadsheets.batchUpdate`. Totais confirmados são derivados somente de doações `VALIDADA`, para evitar somar de novo após correção. Todos os valores de texto gravados pela API usam `stringValue`, sem interpretação como fórmula.
 
-Antes de atualizar `gh-pages`, valide em ambiente real uma doação legítima e sua conferência com a conta autorizada, ou use uma cópia de teste da planilha para testes sintéticos. Não crie doações fictícias nesta planilha real. Rode `npm test` para os testes sintéticos locais.
+Valide o catálogo e as permissões com a implantação real. Use uma cópia de teste da planilha ou os testes sintéticos locais para exercitar gravações, validações e correções; não crie doações fictícias na planilha real. Rode `npm test` para os testes sintéticos locais.

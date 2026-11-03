@@ -6,7 +6,7 @@ Consulta pública de equipes da Sorri Bauru: **https://ortopedia-spec.github.io/
 
 O código do cadastro e da validação está em `dist/donations.js` e `backend/`. A base privada já foi criada: [Gincana 2026 | Doações](https://docs.google.com/spreadsheets/d/1bIeNox8Er33LEZTcfYiAQdNdWNvvhvK-djBotztZ0c8/edit), com 588 profissionais, 31 produtos e as abas `Validadores`, `Doacoes`, `Itens_Doacao` e `Historico_Validacoes`. O [projeto Apps Script](https://script.google.com/d/1jU8sMkLwy6PC3UBfLrCZlJ4pCxLd4HLWk02RDU4wrHhoqMNhflYAPdxT/edit) contém o backend. Veja [backend/README.md](backend/README.md) para inicialização, cliente OAuth, propriedades seguras, validadores e implantação.
 
-**Estado da publicação:** o módulo só aparece quando `dist/donations-config.js` recebe o URL real `/exec` do Apps Script e o ID público do cliente OAuth. Não atualize a branch `gh-pages` antes de configurar e comprovar a integração real. Até lá, o endereço público acima continua oferecendo a consulta de equipes existente, sem cadastro de doações.
+**Acesso público:** a consulta de equipes e o cadastro de doações estão disponíveis no endereço acima, sem login para os profissionais. O cadastro usa o Apps Script implantado e o catálogo da planilha; a conferência exige login Google com uma conta ativa em `Validadores`. O URL `/exec` e o ID público do cliente OAuth estão em `dist/donations-config.js`; o segredo OAuth permanece somente nas propriedades privadas do Apps Script.
 
 ## Executar localmente
 
