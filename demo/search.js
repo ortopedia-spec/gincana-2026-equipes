@@ -1,0 +1,4 @@
+export function normalize(value){return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/\s+/g,' ').trim()}
+export function matches(value,query){const haystack=normalize(value);return normalize(query).split(' ').filter(Boolean).every(part=>haystack.includes(part))}
+export function searchData(data,query){const q=normalize(query);if(!q)return {people:[],teams:[]};const teams=data.equipes.filter(team=>matches(team.nome,q));const people=data.profissionais.filter(person=>matches([person.nome,person.informacoesComplementares?.setorUnidade,...(person.informacoesComplementares?.outrasColunas||[])].join(' '),q));return {people,teams}}
+export function sortedMembers(data,teamId){return data.profissionais.filter(person=>person.equipeId===teamId).sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR',{sensitivity:'base'})||a.id.localeCompare(b.id))}

@@ -2,6 +2,10 @@
 
 Consulta pública de equipes da Sorri Bauru: **https://ortopedia-spec.github.io/gincana-2026-equipes/**. Os nomes e setores ficam em `dist/data/equipes.json`. A divulgação pública desses dados foi autorizada para a Gincana 2026.
 
+## Demonstração local para avaliação
+
+O [HTML de demonstração](demo/index.html) e as [instruções de abertura](demo/README.md) estão isolados em `demo/`. Cadastro, entrada do Serviço Social e validação são simulados e persistem apenas no navegador. Esta pasta não é publicada no GitHub Pages e não grava na planilha real.
+
 ## Módulo de doações
 
 O código do cadastro e da validação está em `dist/donations.js` e `backend/`. A base privada já foi criada: [Gincana 2026 | Doações](https://docs.google.com/spreadsheets/d/1bIeNox8Er33LEZTcfYiAQdNdWNvvhvK-djBotztZ0c8/edit), com 588 profissionais, 31 produtos e as abas `Validadores`, `Doacoes`, `Itens_Doacao` e `Historico_Validacoes`. O [projeto Apps Script](https://script.google.com/d/1jU8sMkLwy6PC3UBfLrCZlJ4pCxLd4HLWk02RDU4wrHhoqMNhflYAPdxT/edit) contém o backend. Veja [backend/README.md](backend/README.md) para inicialização, cliente OAuth, propriedades seguras, validadores e implantação.

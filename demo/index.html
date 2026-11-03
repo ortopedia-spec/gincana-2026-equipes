@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ed1c2e">
+  <meta name="description" content="Demonstração local do cadastro de doações da Gincana 2026.">
+  <title>Gincana 2026 | Demonstração</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./donations.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="site-header">
+      <button type="button" id="validator-open" class="validator-open" hidden>Validar doações</button>
+      <button type="button" id="demo-clear" class="demo-clear">Limpar dados de demonstração</button>
+      <div class="brand">
+        <img src="./assets/logo-sorri-simbolo.png" alt="Sorri Bauru" width="100" height="59">
+        <div class="brand-copy">
+          <span class="eyebrow">Sorri Bauru apresenta</span>
+          <h1>Gincana <span>2026</span></h1>
+          <p>Consulta de equipes</p>
+        </div>
+      </div>
+      <div class="header-rule" aria-hidden="true"></div>
+      <p class="demo-banner">Demonstração — dados salvos somente neste navegador</p>
+      <p id="demo-status" class="demo-status" role="status" aria-live="polite"></p>
+    </header>
+
+    <section id="search-panel" class="search-panel" aria-labelledby="search-title">
+      <p class="section-kicker">Encontre sua turma</p>
+      <h2 id="search-title">Em qual equipe você está?</h2>
+      <p class="search-help">Busque por nome, equipe, setor ou unidade.</p>
+      <form id="search-form" role="search">
+        <label for="query">Sua consulta</label>
+        <div class="search-row">
+          <input id="query" name="query" type="search" autocomplete="off" placeholder="Digite seu nome ou equipe" required>
+          <button type="submit" id="search-button">Buscar <span aria-hidden="true">→</span></button>
+        </div>
+      </form>
+      <div class="search-footer"><button type="button" id="clear-button" class="text-button" hidden>Limpar consulta</button><span id="data-status" role="status" aria-live="polite">Carregando equipes…</span></div>
+    </section>
+
+    <section id="result-region" class="result-region" aria-live="polite" aria-label="Resultado da consulta"></section>
+  </main>
+  <footer class="site-footer"><img src="./assets/identidade-rodape.png" alt="" aria-hidden="true"><span>Gincana 2026 · Sorri Bauru</span></footer>
+</body>
+</html>
