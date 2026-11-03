@@ -20,7 +20,7 @@ export function api(method,data={},token=''){
   if(!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(donationsConfig.appsScriptUrl))return Promise.reject(new Error('Módulo de doações ainda não configurado.'));
   const requestId=crypto.randomUUID();
   return new Promise((resolve,reject)=>{
-    const frame=document.createElement('iframe');frame.hidden=true;frame.title='Comunicação segura com o cadastro de doações';
+    const frame=document.createElement('iframe');frame.className='donations-bridge-frame';frame.title='Comunicação segura com o cadastro de doações';
     const timer=setTimeout(()=>{pending.delete(requestId);frame.remove();reject(new Error('A resposta demorou. Tente novamente; o mesmo cadastro será recuperado.'));},45000);
     pending.set(requestId,{resolve,reject,frame,timer,method,data,token,source:null});
     frame.src=donationsConfig.appsScriptUrl+'?bridge='+encodeURIComponent(requestId);
