@@ -1,5 +1,5 @@
 import {searchData,sortedMembers} from './search.js';
-import {initDonations,setProfessional,professionalActions} from './donations.js?v=20261103-5';
+import {initDonations,setProfessional,professionalActions} from './donations.js?v=20261103-6';
 const $=id=>document.getElementById(id);
 const form=$('search-form'),query=$('query'),region=$('result-region'),status=$('data-status'),clear=$('clear-button'),submit=$('search-button');
 let data=null,options=null;
